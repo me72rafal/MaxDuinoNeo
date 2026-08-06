@@ -10,20 +10,20 @@
 #define AYPLAY
 #define MenuBLK2A
 #define ID11CDTspeedup
-#define Use_c64
-#define ZX81SPEEDUP
-#define Use_MZF
-#define Use_MTX
-#define Use_CAQ
-#define Use_CG                      // Colour Genie .cas/.cgc files playback
-#define tapORIC
+//#define Use_c64
+//#define ZX81SPEEDUP
+//#define Use_MZF
+//#define Use_MTX
+//#define Use_CAQ
+//#define Use_CG                      // Colour Genie .cas/.cgc files playback
+//#define tapORIC
     #define ORICSPEEDUP
-#define Use_CAS                           // .cas files playback on MSX / Dragon / CoCo Tandy computers
+//#define Use_CAS                           // .cas files playback on MSX / Dragon / CoCo Tandy computers
     #define Use_TRS80                   // TRS-80 .cas files playback
     #define Use_DRAGON
         #define Use_Dragon_sLeader        // short Leader of 0x55 allowed for loading TOSEC files
             #define Expand_All            // Expand short Leaders in ALL file header blocks.        
-#define Use_UEF                           // .uef files playback on BBC Micro / Electron / Atom computers
+//#define Use_UEF                           // .uef files playback on BBC Micro / Electron / Atom computers
     #define Use_c112                      // integer gap chunk for .uef
     #define Use_hqUEF                     // .hq.uef files playback on BBC Micro / Electron / Atom computers
         #define Use_c104                  // defined tape format data block: data bits per packet/parity/stop bits    
@@ -154,6 +154,7 @@
 //--------------------------------//
 
 #define USE_ICONS       // show icons for status line and  folders
-//#define SORT_DIRS       // Use extra ram of ESP32S3 for sorting entries. At the moment sorting is case insensitive and directories are not put as first
+#define SORT_DIRS       // Use extra ram of ESP32S3 for sorting entries. At the moment sorting is case insensitive and directories are not put as first
 #define TURBO_MODES     // control TAP/TZX turbomodes by btnRoot during pause
 #define EXTRA_LEDS      // Use extra LEDs - power and play indication
+//#define CIRCULAR_BUFFER   // Use circular buffer for ESP32S3, instead of the double buffer used in other boards. This saves memory and allows larger buffers to be used.
