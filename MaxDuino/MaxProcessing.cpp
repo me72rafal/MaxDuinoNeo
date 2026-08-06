@@ -7,7 +7,13 @@
 #include "file_utils.h"
 #include "isr.h"
 #include "casProcessing.h"
+
+#ifdef CIRCULAR_BUFFER
+#include "buffer_circular.h"
+#else
 #include "buffer.h"
+#endif 
+
 #include "TimerCounter.h"
 #include "processing_state.h"
 #include "MaxDuino.h" // want to refactor and get rid
@@ -121,7 +127,7 @@ void UniPlay()
   isStopped=false;
   writeFinished=false;
   
-  clearBuffer();
+  wbuffer.clearBuffer();
 
   // for CAS/DRAGON:
 #ifdef Use_CAS
@@ -151,11 +157,10 @@ void UniStop() {
 }
 
 void writeEnd() {
-  volatile uint16_t * _wb = &writeBuffer[writepos];
   noInterrupts();
-  *_wb = 0xA000;  // bit15 + bit13: "stop" signal for ISR
+  wbuffer.write_word(  0xa000 );  // bit15 + bit13: "stop" signal for ISR
+  wbuffer.advance_write_word();
   interrupts();
-  advance_write_word();
   currentBit = 0;
   writeFinished = true;
 }
@@ -398,11 +403,12 @@ void writeDataDirect8() {
     // 5e7e:	81 83       	std	Z+1, r24	; 0x01
     // 5e80:	78 94       	sei
 
-    volatile uint16_t * _wb = &writeBuffer[writepos];
+    //volatile uint16_t * _wb = &writeBuffer[writepos];
     noInterrupts();                       //Pause interrupts while we add a period to the buffer
-    *_wb = (0x47 << 8) + currentByte; // = ((1<<14) + (7<<8))>>8
+    uint16_t value  = (0x47 << 8) + currentByte; // = ((1<<14) + (7<<8))>>8
+    wbuffer.write_word( value);  // = ((1<<14) + (7<<8))>>8
     interrupts();
-    advance_write_word();
+    wbuffer.advance_write_word();
   }
 }
 
@@ -1160,7 +1166,7 @@ void TZXProcess() {
 }
 
 void TZXLoop() {   
-  if(currentBlockTask == BLOCKTASK::ID15_TDATA && !write_buffer_full && writepos<=buffsize-8 && bytesToRead>=8)
+  if(currentBlockTask == BLOCKTASK::ID15_TDATA && !(wbuffer.full()) ) //&& writepos<=buffsize-8 && bytesToRead>=8)
   {
     // shortcut for ID15 handler for performance
     // write 8 input bytes (=8 output words to buffer)
@@ -1169,11 +1175,11 @@ void TZXLoop() {
     return;
   }
 
-  if(!write_buffer_full){                    // Keep filling until full
+  if(! wbuffer.full() ){                    // Keep filling until full
     TZXProcess();                           //generate the next period to add to the buffer
     if(currentPeriod>0) {
       //add period to the buffer
-      volatile uint16_t * _wb = &writeBuffer[writepos];
+      //volatile uint16_t * _wb = &writeBuffer[writepos];
       noInterrupts();                       //Pause interrupts while we add a period to the buffer
 
       #ifdef TURBO_MODES // in turbo mode shift period by the turbo factor
@@ -1184,9 +1190,9 @@ void TZXLoop() {
       currentPeriod |= pausebits; // restore pause bits  
       #endif
 
-      *_wb = currentPeriod;
+      wbuffer.write_word( currentPeriod );  // add period to the buffer
       interrupts();
-      advance_write_word();
+      wbuffer.advance_write_word();
     }
   } else {
     if (!pauseOn) {
@@ -1214,20 +1220,21 @@ void UniLoop() {
     return;
   }
 
+  
   bool _copybuff;
-  noInterrupts();
+  //noInterrupts();
   //Pause interrupts to prevent var reads and copy values out
   isPaused = pauseOn;
-  _copybuff = morebuff;
-  morebuff = false;
-  interrupts();
-
+  //_copybuff = morebuff;
+  //morebuff = false;
+  //interrupts();
+  /*
   if(_copybuff)
   {
     //Buffer has swapped, start from the beginning of the new page
     writepos=0;
     write_buffer_full=false;
-  }
+  }*/
 
  #ifdef Use_CAS
     if (casduino!=CASDUINO_FILETYPE::NONE)

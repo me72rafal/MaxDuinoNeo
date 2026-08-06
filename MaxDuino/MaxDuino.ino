@@ -28,7 +28,7 @@
  *                
 */
 
-
+#include "Arduino.h"
 #include "product_strings.h"
 #include "configs.h"
 #include "current_settings.h"
@@ -42,7 +42,13 @@
 #include "menu.h"
 #include "constants.h"
 #include "file_utils.h"
-#include "buffer.h"
+
+#ifndef CIRCULAR_BUFFER
+  #include "buffer.h"
+#else 
+  #include "buffer_circular.h"
+#endif 
+
 #include "MaxProcessing.h"
 #include "CounterPercent.h"
 #include "processing_state.h"
@@ -1250,7 +1256,7 @@ void SetPlayBlock()
     lcd.setCursor(12,3);lcd.print('B'+block);
   #endif
 
-  clearBuffer();
+  wbuffer.clearBuffer();
   currpct=255; 
   counter=0;       
   currentBit=0;                               // fallo reproducción de .tap tras .tzx

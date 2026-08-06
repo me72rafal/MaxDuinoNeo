@@ -1,8 +1,8 @@
-#include "buffer.h"
+#ifndef CIRCULAR_BUFFER
 
 volatile bool morebuff = false;
-buffsize_t readpos = 0; // only used within the ISR, never accessed outside, so doesn't need to be volatile
-buffsize_t writepos = 0; // only used within the main loop, never accessed by ISR, so doesn't need to be volatile
+buffsize_t readPos = 0; // only used within the ISR, never accessed outside, so doesn't need to be volatile
+buffsize_t writePos = 0; // only used within the main loop, never accessed by ISR, so doesn't need to be volatile
 bool write_buffer_full = false;
 volatile uint16_t wbuffer[2][buffsize];
 volatile uint16_t * volatile writeBuffer=wbuffer[0]; // the pointer itself is volatile (since the ISR can swap readBuffer/writeBuffer)
@@ -26,3 +26,7 @@ void advance_write_word()
   if (writepos==(buffsize_t)(buffsize))  // this handles overflow correctly i.e. if buffsize==256 and writepos has wrapped from 255 to 0, (buffsize_t)(buffsize) == 0 too.
     write_buffer_full=true;
 }
+
+
+#endif 
+
