@@ -21,6 +21,16 @@
 #define SDFAT_FILE_TYPE 1
 #endif
 
+
+#ifdef ESP32_AUDIO_KIT
+
+//#define SPI_DRIVER_SELECT 0
+#define SD_CS_PIN   13
+#define CUSTOM_MOSI 15
+#define CUSTOM_MISO 2
+#define CUSTOM_CLK  14
+#endif 
+
 // XIAO RP2040/RP2350 use SPI0 (pins D8=GPIO2 SCK, D10=GPIO3 MOSI, D9=GPIO4 MISO).
 // Pico and other boards use SPI1 (pins GPIO10/11/12).
 #if defined(ARDUINO_SEEED_XIAO_RP2040) || defined(ARDUINO_SEEED_XIAO_RP2350)

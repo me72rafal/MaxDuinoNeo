@@ -143,7 +143,14 @@
     #define USER_LED_ON            analogWrite( ledUser, 255)
   #endif //EXTRA_LEDS
 
-  #else
+#elif defined(ESP32_AUDIO_KIT)
+
+  #define outputPin         1
+  #define INIT_OUTPORT            pinMode(outputPin,OUTPUT)
+  #define WRITE_LOW               digitalWrite(outputPin,LOW)
+  #define WRITE_HIGH              digitalWrite(outputPin,HIGH)
+
+#else
 #error Unknown device type or missing definition in pinSetup.h
 #endif 
 
@@ -326,6 +333,20 @@
 
 #endif // BOARD_HAS_PIN_REMAP
 
+#elif defined(ESP32_AUDIO_KIT)
+//
+// Pin definition for Arduino Nano ESP32
+//
+
+
+// GPIO pins definition
+#define chipSelect   13
+#define btnPlay       36            //Play Button
+#define btnStop       19            //Stop Button
+#define btnUp         23            //Up button
+#define btnDown       18            //Down button
+#define btnMotor      3             //Motor Sense (connect pin to gnd to play, NC for pause)
+#define btnRoot       5             //Return to SD card root
 
 #else
 #error Unknown device type or missing definition in pinSetup.h

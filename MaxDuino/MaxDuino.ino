@@ -56,6 +56,10 @@
   #include "EEPROM_bmp_loader.h"
 #endif
 
+#ifdef ESP32_AUDIO_KIT
+  #include <SPI.h>
+#endif 
+
 #ifdef SORT_DIRS
 #include <DoubleLinkedList.h>
 #include "sort_dirs.h"
@@ -209,10 +213,21 @@ void setup() {
     #endif
   #endif
 
+  #ifdef ESP32_AUDIO_KIT // setup custom SPI for ESP32 Audio Kit
+
+  SPI.begin( CUSTOM_CLK, CUSTOM_MISO, CUSTOM_MOSI, chipSelect); // SCK, MISO, MOSI, SS
+
+  while (!sd.begin(SdSpiConfig(chipSelect, DEDICATED_SPI, SD_SPI_CLOCK_SPEED))) {
+  #else
   while (!sd.begin(SD_CONFIG)) {
+  #endif
+    #ifdef SERIALSCREEN
+    sd.initErrorHalt(&Serial);
+    #endif
+
     //Start SD card and check it's working
     printtextF(PSTR("No SD Card"),0);
-    delay(50);
+    delay(200);
     #ifdef SOFT_POWER_OFF
     check_power_off_key();
     #endif
@@ -224,6 +239,8 @@ void setup() {
   usb_retach();
   setup_usb_storage();
   #endif
+
+  Serial.println(F("Initializing SD done..."));
 
   changeDirRoot();
   UniSetup();                       //Setup TZX specific options

@@ -209,6 +209,30 @@ void pinsetup()
   pinMode( ledUser, OUTPUT );
   analogWrite( ledUser, 0);
 #endif
+
+#elif defined(ESP32_AUDIO_KIT)
+
+  pinMode(btnPlay,INPUT_PULLUP);
+  //digitalWrite(btnPlay,HIGH);
+  pinMode(btnStop,INPUT_PULLUP);
+  //digitalWrite(btnStop,HIGH);
+  pinMode(btnUp,INPUT_PULLUP);
+  //digitalWrite(btnUp,HIGH);
+  pinMode(btnDown,INPUT_PULLUP);
+  //digitalWrite(btnDown,HIGH);
+  pinMode(btnMotor, INPUT_PULLUP);
+  //digitalWrite(btnMotor,HIGH);
+  pinMode(btnRoot, INPUT_PULLUP);
+  //digitalWrite(btnRoot, HIGH); 
+
+#ifdef EXTRA_LEDS
+#warning Use support of extra LEDs
+  pinMode( ledPower, OUTPUT );
+  analogWrite( ledPower, 255);
+  pinMode( ledUser, OUTPUT );
+  analogWrite( ledUser, 0);
+#endif
+
    
 #elif defined(ARDUINO_XIAO_ESP32C3)
 

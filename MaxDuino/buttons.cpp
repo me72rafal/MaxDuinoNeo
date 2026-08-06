@@ -173,6 +173,13 @@ bool button_rec()
 void setup_buttons(void)
 {
   // 
+  #ifdef ESP32_AUDIO_KIT
+    pinMode(btnPlay, INPUT_PULLUP);
+    pinMode(btnStop, INPUT_PULLUP);
+    pinMode(btnUp, INPUT_PULLUP);
+    pinMode(btnDown, INPUT_PULLUP);
+    pinMode(btnRoot, INPUT_PULLUP);
+  #endif
 }
 
 bool button_any() {
