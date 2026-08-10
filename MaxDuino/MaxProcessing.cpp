@@ -1166,8 +1166,7 @@ void TZXProcess() {
 }
 
 void TZXLoop() {   
-  if(currentBlockTask == BLOCKTASK::ID15_TDATA && !(wbuffer.full()) ) //&& writepos<=buffsize-8 && bytesToRead>=8)
-  {
+  if ( currentBlockTask == BLOCKTASK::ID15_TDATA && wbuffer.canfit8() && bytesToRead >= 8 ) {
     // shortcut for ID15 handler for performance
     // write 8 input bytes (=8 output words to buffer)
     // ALSO: skips the lcd updates (SHOW_CNTR, SHOW_PCT) entirely
@@ -1175,7 +1174,7 @@ void TZXLoop() {
     return;
   }
 
-  if(! wbuffer.full() ){                    // Keep filling until full
+  if (!wbuffer.full() ){                    // Keep filling until full
     TZXProcess();                           //generate the next period to add to the buffer
     if(currentPeriod>0) {
       //add period to the buffer
@@ -1219,7 +1218,6 @@ void UniLoop() {
     // condition first - see above)
     return;
   }
-
   
   bool _copybuff;
   //noInterrupts();

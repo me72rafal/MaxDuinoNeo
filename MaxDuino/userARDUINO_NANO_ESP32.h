@@ -54,7 +54,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Set defines for various types of screen
 
-//#define SERIALSCREEN       // For testing and debugging
+///#define SERIALSCREEN       // For testing and debugging
 //#define SERIALSCREEN_DEBUG // For testing and debugging
 // #define FREERAM                   // Changing filenameLength from 255 to 190
 #define LARGEBUFFER // small buffer size used by default to free RAM
@@ -92,7 +92,7 @@
 
 // disable these both due to noise on ESP32:
 //#define SHOW_CNTR
-#define SHOW_PCT
+//#define SHOW_PCT
 
 #define CNTRBASE 100         // 100 for sss, 60 for m:ss (sorry, no space for separator)
 //#define MAXPAUSE_PERIOD 1000 // millis
@@ -157,4 +157,4 @@
 #define SORT_DIRS       // Use extra ram of ESP32S3 for sorting entries. At the moment sorting is case insensitive and directories are not put as first
 #define TURBO_MODES     // control TAP/TZX turbomodes by btnRoot during pause
 #define EXTRA_LEDS      // Use extra LEDs - power and play indication
-//#define CIRCULAR_BUFFER   // Use circular buffer for ESP32S3, instead of the double buffer used in other boards. This saves memory and allows larger buffers to be used.
+#define CIRCULAR_BUFFER   // Use circular buffer for ESP32S3, instead of the double buffer used in other boards. This saves memory and allows larger buffers to be used.

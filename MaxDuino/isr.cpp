@@ -52,15 +52,26 @@ static ISR_ATTR void advance_read_word()
 
 void ISR_ATTR isrCallback() {
 
+   byte pauseFlipBit = false;
+  unsigned long newTime;
+  static unsigned long directSampleLength;
+    uint16_t workingPeriod;
+
+
   //ISR Output routine
 //  unsigned long zeroTime = micros();
-  uint16_t workingPeriod;
+
+  // wait till the circular buffer if prefilled
+  if ( !wbuffer.canPlay() ) {
+    //wait till playback buffer fills
+    newTime = 50000;
+    goto _set_period;
+  }
+
   
   wbuffer.read_word( &workingPeriod );
 
-  byte pauseFlipBit = false;
-  unsigned long newTime;
-  static unsigned long directSampleLength;
+ 
  
 #ifdef EXTRA_LEDS
   USER_LED_ON;
