@@ -28,3 +28,4 @@ testing/
 *.gcov
 # vscode workspace files
 *-workspace
+get-platformio.py

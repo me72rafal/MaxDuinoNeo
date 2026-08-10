@@ -3,23 +3,21 @@
 #include "TimerCounter.h"
 #include "isr.h"
 
-#if defined(ESP32_XTENSA)
+#if defined(ESP32)
 // ESP32 code derived from TimerInterrupt_Generic by Khoi Hoang
 // ESP32 has an operating system / SDK layer we need to use
 #include <esp32-hal-timer.h>
+//#include "driver/timer.h"
+//#include "esp_intr_alloc.h"
 #define MAX_ESP32_NUM_TIMERS 4
 // typedef void (*timer_callback)  (void);
 #endif // 
 
 
-#if defined(ESP32_RISCV)
-#include "driver/timer.h"
-#include "esp_intr_alloc.h"
-#endif
-
 // standard timer class for all devices, constructed in the same way
 unsigned long TimerCounter::currentMicroseconds=0;
 TimerCounter::TimerCounter() {}
+
 void TimerCounter::initialize()
 {
   _initialize();
@@ -577,20 +575,11 @@ void TimerCounter::_attachInterrupt()
   interrupts();
 }
 
-#elif defined(ESP32_XTENSA) || defined(ESP32_RISCV)
+#elif defined(ESP32)
 
 #define __TIMER_MAXPAUSE_PERIOD 1000
 
 hw_timer_t * timer = NULL;
-
-#if defined(ESP32_RISCV)
-static bool IRAM_ATTR timer_isr_wrapper(void *arg) {
-    void (*fn)(void) = (void (*)(void))arg;
-    fn();
-    return false;
-} 
-
-#else  
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -601,81 +590,54 @@ void ARDUINO_ISR_ATTR onTimer()
   portEXIT_CRITICAL_ISR(&timerMux);
 }
 
-#endif
-
-
-
-void TimerCounter::_initialize()
-{
+void TimerCounter::_initialize() {
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
-
-  if (timer == NULL)
-  {
+  if (timer == NULL) {
     //    uint32_t frequency = 1000000 / microseconds;
-    timer = timerBegin( (uint32_t)1000000); // we tick per ms
+    timer = timerBegin((uint32_t)1000000);  // we tick per ms
     if (timer != NULL)
       timerAlarm(timer, (uint32_t)1000000, true, 0 /* repeat=unlimited */);
-
   } else {
-      timerAlarm(timer, 1000000UL, true, 0 /* repeat=unlimited */);
-      timerRestart(timer);
+    timerStart(timer);
+    timerAlarm(timer, 1000000UL, true, 0 /* repeat=unlimited */);
+    timerRestart(timer);
   }
 #else
-  if (timer==NULL)
-  {
+  if (timer == NULL) {
+    Serial.println("Timer is null!!!");
     // count microseconds - so divide CPU freq in Hz by 1e6
     timer = timerBegin(0, getApbFrequency() / 1000000, true);
-    #if defined(ESP32_XTENSA)
-    timerAttachInterruptFlag(timer, &isrCallback, true, ARDUINO_ISR_FLAG);
-    #else
-    // timerBegin(0, ...) → group=0, timer=0 (see timer_dev[] in esp32-hal-timer.c)
-    timer_isr_callback_add(TIMER_GROUP_0, TIMER_0,
-                           timer_isr_wrapper, (void *)isrCallback, ESP_INTR_FLAG_IRAM);
-    #endif
+    //timerAttachInterruptFlag(timer, &onTimer, true, ARDUINO_ISR_FLAG);
   }
 #endif
-
 }
 
-void ISR_ATTR TimerCounter::_setPeriod(unsigned long microseconds)
-{
+void ISR_ATTR TimerCounter::_setPeriod(unsigned long microseconds) {
 
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   timerAlarm(timer, microseconds, true, 0 /* repeat=unlimited */);
 #else 
-
-#if defined(ESP32_RISCV)
-  // timerAlarmWrite handles alarm value + autoreload via IDF registers (alarmhi/lo).
-  // tx_alarm_en is self-clearing on C3 — must re-arm every period.
   timerAlarmWrite(timer, microseconds, true);
-  TIMERG0.hw_timer[0].config.tx_alarm_en = 1;
-#else
-  timerAlarmWrite(timer, microseconds, true);
-#endif
+  timerAlarmEnable(timer);
+  timerRestart(timer);
 #endif
 }
 
 void TimerCounter::stop()
 {
-
-#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
-  timerEnd(timer);
-  timer = NULL;
-#else
-  if(timer!=NULL)
+  if ( timer != NULL )
     timerAlarmDisable(timer);
-#endif
 }
 
-void TimerCounter::_attachInterrupt()
-{
-
+void TimerCounter::_attachInterrupt() {
+  if ( timer != NULL ) {
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
-  if ( timer != NULL )
     timerAttachInterrupt(timer, &onTimer);
 #else
-  timerAlarmEnable(timer);
+    timerDetachInterrupt( timer);
+    timerAttachInterrupt( timer, &onTimer, true);
 #endif
+  }
 }
 
 #elif defined(ESP8266)
