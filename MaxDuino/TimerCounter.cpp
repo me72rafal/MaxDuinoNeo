@@ -632,8 +632,6 @@ void TimerCounter::stop()
 
 void TimerCounter::_attachInterrupt() {
   if ( timer != NULL ) {
-void TimerCounter::_attachInterrupt() {
-  if ( timer != NULL ) {
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
     timerAttachInterrupt(timer, &onTimer);
 #else
