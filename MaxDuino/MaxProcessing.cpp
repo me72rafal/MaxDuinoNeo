@@ -300,6 +300,9 @@ void StandardBlock() {
 
       if(EndOfFile) currentID=BLOCKID::IDEOF;
       break;
+
+    default:
+      break;
   }
 }
 
@@ -335,6 +338,9 @@ void PureDataBlock() {
       temppause = pauseLength;
       currentID = BLOCKID::IDPAUSE;
     break;
+
+    default:
+      break;
   }
 }
 
@@ -757,6 +763,9 @@ void TZXProcess() {
             case BLOCKTASK::TDATA:
               ZX8081DataBlock();
               break;
+
+            default:
+              break;
           }  
           break; // case ID19
 
@@ -1156,6 +1165,10 @@ void TZXProcess() {
       
       } // end of CurrentID switch statement
       break;
+      
+    default:
+      break;
+
   } // end of CurrentTask switch statement
 }
 

@@ -177,6 +177,8 @@ void tzx_process_blockid_oric() {
           #endif
         }
         break;                
+      default:
+        break;
     }
   }
 }

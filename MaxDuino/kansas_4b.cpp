@@ -131,6 +131,8 @@ void tzx_process_blockid_kansas_4b() {
             pilotLength = onePulse = 65; //3846=1000000/(65*4), 66 funciona tb con 3787 bauds
             zeroPulse = 130;                  
             break;
+          default:
+            break;
         }
       } //End of TSX_SPEEDUP
 
@@ -173,6 +175,8 @@ void tzx_process_blockid_kansas_4b() {
       //Close block with a pause
       temppause = pauseLength;
       currentID = BLOCKID::IDPAUSE;
+      break;
+    default:
       break;
   }
 }

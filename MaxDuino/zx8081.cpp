@@ -97,6 +97,9 @@ void tzx_process_blockid_zx8081_zxp() {
     case BLOCKTASK::TDATA:
       ZX8081DataBlock();
     break;
+
+    default:
+      break;
   }
 }
 
@@ -113,5 +116,8 @@ void tzx_process_blockid_zx8081_zxo() {
     case BLOCKTASK::TDATA:
       ZX8081DataBlock();
     break; 
+
+    default:
+    break;
   }
 }
