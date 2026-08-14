@@ -20,9 +20,6 @@ void reset_output_state() {
   WRITE_LOW;
   wasPauseBlock=false;
   isPauseBlock=false;
-#ifdef EXTRA_LEDS
-  USER_LED_OFF;
-#endif
 }
 
 static ISR_ATTR void advance_read_word()
@@ -50,18 +47,9 @@ void ISR_ATTR isrCallback() {
   byte pauseFlipBit = false;
   unsigned long newTime;
   static unsigned long directSampleLength;
- 
-#ifdef EXTRA_LEDS
-  USER_LED_ON;
-#endif
 
- 
   if(isPaused)
   {
-    #ifdef EXTRA_LEDS
-    USER_LED_OFF;
-    #endif
-    
     newTime = 50000;
     goto _set_period;
   }

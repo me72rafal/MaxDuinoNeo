@@ -1217,10 +1217,14 @@ void UniLoop() {
   if(isStopped) {
     // if ISR has finished draining all the buffers, we are officially complete
     stopFile();
+
     return;
   }
 
   if(writeFinished) {
+    #ifdef EXTRA_LEDS
+    USER_LED_OFF;
+    #endif
     // if main loop (UniLoop) has finishsed writing all the file into the writeBuffer
     // then there is nothing left for UniLoop to do (but we must check isStopped
     // condition first - see above)

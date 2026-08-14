@@ -583,7 +583,7 @@ hw_timer_t * timer = NULL;
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
-void ARDUINO_ISR_ATTR onTimer()
+void ISR_ATTR onTimer()
 {
   portENTER_CRITICAL_ISR(&timerMux);
   isrCallback();
@@ -626,8 +626,13 @@ void ISR_ATTR TimerCounter::_setPeriod(unsigned long microseconds) {
 
 void TimerCounter::stop()
 {
-  if ( timer != NULL )
-    timerStop(timer);
+  if ( timer != NULL ) {
+    #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+      timerStop(timer);
+    #else
+      timerAlarmDisable(timer);
+    #endif
+  }
 }
 
 void TimerCounter::_attachInterrupt() {
