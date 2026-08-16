@@ -57,9 +57,10 @@
 #endif
 
 #ifdef SORT_DIRS
-#include <DoubleLinkedList.h>
+//#include <DoubleLinkedList.h>
 #include "sort_dirs.h"
-DoubleLinkedList<dirEntry> dirEntries;
+
+MaxduinoDirectory  dirEntries;
 #endif
 
 
@@ -1016,22 +1017,6 @@ void playFile() {
   }
 }
 
-#ifdef SORT_DIRS
-void insertSorted(DoubleLinkedList<dirEntry> *list, dirEntry *newentry)
-// inserts directory entry into the list, keeping the list sorted by filename
-{
-  for (int f = 0; f < list->size(); f++)
-  {
-    if (list->getElement(f) > *newentry)
-    {
-      list->insert(*newentry, f);
-      return;
-    }
-  }
-  list->append(*newentry);
-}
-#endif
-
 void getMaxFile() {    
   // gets the total files in the current directory and stores the number in maxFile
   // and also gets the file index of the last file found in this directory
@@ -1050,7 +1035,9 @@ void getMaxFile() {
     {
       entry.getName(newEntry.name, 256);
       newEntry.index = currentDir->curPosition() / 32 - 1;
-      insertSorted(&dirEntries, &newEntry);
+      newEntry.isDir = entry.isDir(); // todo check if director
+      dirEntries.append( newEntry);
+      //insertSorted(&dirEntries, &newEntry);
       maxFile = dirEntries.size()-1;
       dirEmpty = false;
       entry.close();
@@ -1059,6 +1046,9 @@ void getMaxFile() {
       analogWrite(ledPower, ( 140+(maxFile<<2) )%256 ); // light up the LED to show progress of directory scan
       #endif
     }
+  if ( dirEntries.size() > 0 ) {
+    dirEntries.sort();
+  }
 #else  // no directory sorting
   while(entry.openNext(currentDir, O_RDONLY)) {
     maxFile = currentDir->curPosition()/32-1;

@@ -44,9 +44,8 @@
 #endif
 
 #ifdef SORT_DIRS
-#include <DoubleLinkedList.h>
 #include "sort_dirs.h"
-extern DoubleLinkedList<dirEntry> dirEntries;
+extern MaxduinoDirectory dirEntries;
 #endif
 
 #ifdef TURBO_MODES
